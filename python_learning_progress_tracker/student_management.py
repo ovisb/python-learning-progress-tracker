@@ -2,9 +2,8 @@ from python_learning_progress_tracker.student import Student
 
 
 class StudentManagement:
-
     def __init__(self) -> None:
-        self.__students = []
+        self.__students: list[Student] = []
 
     def add_student(self, student: "Student") -> None:
         self.__students.append(student)

@@ -1,5 +1,4 @@
 class MenuChoiceValidator:
-
     @staticmethod
     def is_exit(choice: str) -> bool:
         return choice == "exit"

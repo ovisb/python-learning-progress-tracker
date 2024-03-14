@@ -2,7 +2,6 @@ import re
 
 
 class StudentValidator:
-
     @staticmethod
     def __validate_name(name: str) -> bool:
         if StudentValidator.__length_bellow_threshold(name):

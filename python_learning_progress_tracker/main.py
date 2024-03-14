@@ -1,6 +1,6 @@
 """Main module"""
-from python_learning_progress_tracker.user_interface import UserInterface
 from python_learning_progress_tracker.student_management import StudentManagement
+from python_learning_progress_tracker.user_interface import UserInterface
 
 
 def main() -> None:
@@ -10,5 +10,5 @@ def main() -> None:
     ui.start()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

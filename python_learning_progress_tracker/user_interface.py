@@ -1,5 +1,5 @@
-from python_learning_progress_tracker.student import Student
 from python_learning_progress_tracker.menu_choice_validator import MenuChoiceValidator
+from python_learning_progress_tracker.student import Student
 from python_learning_progress_tracker.student_input_validator import StudentValidator
 from python_learning_progress_tracker.student_management import StudentManagement
 
@@ -26,10 +26,12 @@ class UserInterface:
         return True
 
     @staticmethod
-    def __treat_exception_multiple_last_name(student_info: list[str]) -> tuple[str, str, str]:
+    def __treat_exception_multiple_last_name(
+        student_info: list[str],
+    ) -> tuple[str, str, str]:
         if len(student_info) >= 4:
             first_name = student_info[0]
-            last_name = " ".join(student_info[1:len(student_info) - 1])
+            last_name = " ".join(student_info[1: len(student_info) - 1])
             email = student_info[-1]
         else:
             first_name, last_name, email = student_info
@@ -57,7 +59,9 @@ class UserInterface:
                 while True:
                     choice = UserInterface.__get_user_details()
                     if MenuChoiceValidator.is_back(choice):
-                        print(f"Total {len(self.__student_manager)} students have been added.")
+                        print(
+                            f"Total {len(self.__student_manager)} students have been added."
+                        )
                         break
 
                     student_info = choice.split()
@@ -65,12 +69,14 @@ class UserInterface:
                     if not UserInterface.__validate_number_of_inputs(student_info):
                         continue
 
-                    student_info = UserInterface.__treat_exception_multiple_last_name(student_info)
+                    updated_student_info = UserInterface.__treat_exception_multiple_last_name(
+                        student_info
+                    )
 
-                    if not StudentValidator.validate_student_info(student_info):
+                    if not StudentValidator.validate_student_info(updated_student_info):
                         continue
 
-                    self.__student_manager.add_student(Student(*student_info))
+                    self.__student_manager.add_student(Student(*updated_student_info))
                     print("The student has been added.")
             else:
                 print("Error: unknown command!")
