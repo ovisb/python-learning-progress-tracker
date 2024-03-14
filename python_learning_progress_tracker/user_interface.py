@@ -17,9 +17,16 @@ class UserInterface:
     def __validate_pattern(pattern: str, text: str) -> bool:
         return bool(re.match(pattern, text))
 
+    @staticmethod
+    def __length_bellow_threshold(name):
+        return len(name) < 2
+
     @classmethod
     def __validate_name(cls, name: str) -> bool:
-        pattern = r"^[a-zA-Z\s'\-]+$"
+        if cls.__length_bellow_threshold(name):
+            return False
+
+        pattern = r"^(?!['-])[a-zA-Z]+(?:['\s-][a-zA-Z]+)*(?<!-)$"
         return cls.__validate_pattern(pattern, name)
 
     @classmethod
@@ -29,7 +36,7 @@ class UserInterface:
 
     @staticmethod
     def __validate_number_of_inputs(student_info: list[str]) -> bool:
-        if len(student_info) < 3 or len(student_info) > 4:
+        if len(student_info) < 3:
             print("Incorrect credentials.")
             return False
 
@@ -55,9 +62,10 @@ class UserInterface:
 
     @staticmethod
     def __treat_exception_multiple_last_name(student_info: list[str]) -> tuple[str, str, str]:
-        if len(student_info) == 4:
+        if len(student_info) >= 4:
             first_name = student_info[0]
-            last_name = student_info[1] + " " + student_info[2]
+            # last_name = student_info[1] + " " + student_info[2]
+            last_name = " ".join(student_info[1:len(student_info) - 1])
             email = student_info[-1]
         else:
             first_name, last_name, email = student_info

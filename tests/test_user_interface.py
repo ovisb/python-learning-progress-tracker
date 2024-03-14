@@ -55,6 +55,8 @@ def test_add_single_student_success(ui, monkeypatch, capsys, full_input):
             "James Dean james.dean@gmail.com",
             "Andrew Tim Johnson maryj@google.com",
             "Tom Cruise tom.cruise@gmail.com",
+            "Robert Jemison Van de Graaff robertvdgraaff@mit.edu",
+            "O'Neill Bool onneilbool@mit.edu"
     )
 ])
 def test_add_multiple_student_success(ui, monkeypatch, capsys, full_input):
@@ -67,7 +69,7 @@ def test_add_multiple_student_success(ui, monkeypatch, capsys, full_input):
 
 
 @pytest.mark.parametrize("first_name", [
-    "J.", "Stanisław", "123", "1asd", "Oğuz", "1james", "James123"
+    "J.", "Stanisław", "123", "1asd", "Oğuz", "1james", "James123", "n", "-name", "name-", "-name-"
 ])
 def test_fail_add_student_first_name(ui, monkeypatch, capsys, first_name):
     monkeypatch.setattr('sys.stdin', StringIO(f"add students\n{first_name} Dean james.dean@gmail.com\nback\nexit\n"))
@@ -77,7 +79,7 @@ def test_fail_add_student_first_name(ui, monkeypatch, capsys, first_name):
 
 
 @pytest.mark.parametrize("last_name", [
-    "J.", "123", "1asd", "Oğuz", "1james", "James123"
+    "J.", "123", "1asd", "Oğuz", "1james", "James123", "n", "-name", "name-", "-name-", "'", "'name'"
 ])
 def test_fail_add_student_last_name(ui, monkeypatch, capsys, last_name):
     monkeypatch.setattr('sys.stdin', StringIO(f"add students\nJames {last_name} james.dean@gmail.com\nback\nexit\n"))
@@ -97,7 +99,7 @@ def test_fail_add_student_email(ui, monkeypatch, capsys, student_email):
 
 
 @pytest.mark.parametrize("bad_info", [
-    "1", "james dean", "banana", "James Dean james@gmail.com test abc"
+    "1", "james dean", "banana"
 ])
 def test_fail_add_student_wrong_info(ui, monkeypatch, capsys, bad_info):
     monkeypatch.setattr('sys.stdin', StringIO(f"add students\n{bad_info}\nback\nexit\n"))
