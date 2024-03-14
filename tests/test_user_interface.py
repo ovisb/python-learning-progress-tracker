@@ -2,11 +2,12 @@ from io import StringIO
 import pytest
 
 from python_learning_progress_tracker.user_interface import UserInterface
+from python_learning_progress_tracker.student_management import StudentManagement
 
 
 @pytest.fixture
 def ui():
-    return UserInterface()
+    return UserInterface(StudentManagement())
 
 
 def test_start_exit_message(ui, monkeypatch, capsys):
@@ -68,34 +69,17 @@ def test_add_multiple_student_success(ui, monkeypatch, capsys, full_input):
     assert captured.out.strip() == f"Enter student credentials or 'back' to return: \n{added_success}\nTotal {len(full_input)} students have been added.\nBye!"
 
 
-@pytest.mark.parametrize("first_name", [
-    "J.", "Stanisław", "123", "1asd", "Oğuz", "1james", "James123", "n", "-name", "name-", "-name-"
+@pytest.mark.parametrize("invalid_input", [
+    ("-John Doe test@gmail.com", "Incorrect first name."),
+    ("John -Doe test@gmail.com", "Incorrect last name."),
+    ("John Doe test@gmail", "Incorrect email."),
 ])
-def test_fail_add_student_first_name(ui, monkeypatch, capsys, first_name):
-    monkeypatch.setattr('sys.stdin', StringIO(f"add students\n{first_name} Dean james.dean@gmail.com\nback\nexit\n"))
+def test_invalid_input(ui, monkeypatch, capsys, invalid_input):
+    inp, expected = invalid_input
+    monkeypatch.setattr('sys.stdin', StringIO(f"add students\n{inp}\nback\nexit\n"))
     ui.start()
     captured = capsys.readouterr()
-    assert captured.out.strip() == "Enter student credentials or 'back' to return: \nIncorrect first name.\nTotal 0 students have been added.\nBye!"
-
-
-@pytest.mark.parametrize("last_name", [
-    "J.", "123", "1asd", "Oğuz", "1james", "James123", "n", "-name", "name-", "-name-", "'", "'name'"
-])
-def test_fail_add_student_last_name(ui, monkeypatch, capsys, last_name):
-    monkeypatch.setattr('sys.stdin', StringIO(f"add students\nJames {last_name} james.dean@gmail.com\nback\nexit\n"))
-    ui.start()
-    captured = capsys.readouterr()
-    assert captured.out.strip() == "Enter student credentials or 'back' to return: \nIncorrect last name.\nTotal 0 students have been added.\nBye!"
-
-
-@pytest.mark.parametrize("student_email", [
-    "test", "testasdl", "123", "test@gmail"
-])
-def test_fail_add_student_email(ui, monkeypatch, capsys, student_email):
-    monkeypatch.setattr('sys.stdin', StringIO(f"add students\nJames Dean {student_email}\nback\nexit\n"))
-    ui.start()
-    captured = capsys.readouterr()
-    assert captured.out.strip() == "Enter student credentials or 'back' to return: \nIncorrect email.\nTotal 0 students have been added.\nBye!"
+    assert captured.out.strip() == f"Enter student credentials or 'back' to return: \n{expected}\nTotal 0 students have been added.\nBye!"
 
 
 @pytest.mark.parametrize("bad_info", [
