@@ -27,7 +27,7 @@ class UserInterface:
 
     @staticmethod
     def __treat_exception_multiple_last_name(
-        student_info: list[str],
+            student_info: list[str],
     ) -> tuple[str, str, str]:
         if len(student_info) >= 4:
             first_name = student_info[0]
@@ -38,6 +38,30 @@ class UserInterface:
 
         return first_name, last_name, email
 
+    def __add_student_choice(self):
+        while True:
+            choice = UserInterface.__get_user_details()
+            if MenuChoiceValidator.is_back(choice):
+                print(
+                    f"Total {len(self.__student_manager)} students have been added."
+                )
+                break
+
+            student_info = choice.split()
+
+            if not UserInterface.__validate_number_of_inputs(student_info):
+                continue
+
+            updated_student_info = UserInterface.__treat_exception_multiple_last_name(
+                student_info
+            )
+
+            if not StudentValidator.validate_student_info(updated_student_info):
+                continue
+
+            self.__student_manager.add_student(Student(*updated_student_info))
+            print("The student has been added.")
+
     def start(self) -> None:
         while True:
             choice = UserInterface.__get_input()
@@ -46,37 +70,16 @@ class UserInterface:
                 print("Bye!")
                 return
 
-            elif MenuChoiceValidator.is_back(choice):
+            if MenuChoiceValidator.is_back(choice):
                 print("Enter 'exit' to exit the program.")
                 continue
 
-            elif MenuChoiceValidator.is_empty_input(choice):
+            if MenuChoiceValidator.is_empty_input(choice):
                 print("No input.")
                 continue
 
-            elif MenuChoiceValidator.is_add_student(choice):
+            if MenuChoiceValidator.is_add_student(choice):
                 print("Enter student credentials or 'back' to return: ")
-                while True:
-                    choice = UserInterface.__get_user_details()
-                    if MenuChoiceValidator.is_back(choice):
-                        print(
-                            f"Total {len(self.__student_manager)} students have been added."
-                        )
-                        break
-
-                    student_info = choice.split()
-
-                    if not UserInterface.__validate_number_of_inputs(student_info):
-                        continue
-
-                    updated_student_info = UserInterface.__treat_exception_multiple_last_name(
-                        student_info
-                    )
-
-                    if not StudentValidator.validate_student_info(updated_student_info):
-                        continue
-
-                    self.__student_manager.add_student(Student(*updated_student_info))
-                    print("The student has been added.")
+                self.__add_student_choice()
             else:
                 print("Error: unknown command!")
