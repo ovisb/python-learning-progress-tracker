@@ -1,0 +1,56 @@
+[tool.poetry]
+name = "python-learning-progress-tracker"
+version = "0.1.0"
+description = ""
+authors = ["Ovidiu sbangu <ovidiu.sbangu@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+
+[tool.poetry.group.dev.dependencies]
+black = "^23.7.0"
+isort = "*"
+flake8 = "*"
+mypy = "*"
+pytest = "*"
+pytest-cov = "*"
+flake8-pyproject = "*"
+
+[tool.poetry.group.commit]
+optional = true
+
+[tool.poetry.group.commit.dependencies]
+pre-commit = "*"
+
+[tool.isort]
+multi_line_output = 3
+include_trailing_comma = true
+force_grid_wrap = 0
+use_parentheses = true
+line_length = 88
+
+[tool.flake8]
+max-line-length = 120
+ignore = ["E226", "E302", "E41", "W503"]
+
+[tool.mypy]
+files = ["python_learning_progress_tracker", "tests"]
+ignore_missing_imports = true
+no_namespace_packages = true
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "-ra -q -m 'not slow'"
+testpaths = ["tests/"]
+
+[tool.coverage.run]
+source = ["python_learning_progress_tracker"]
+
+[tool.coverage.report]
+show_missing = true
+omit = [ "*__init__*", "*main.py*" ]
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
