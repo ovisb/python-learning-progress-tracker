@@ -86,16 +86,15 @@ def test_add_multiple_student_success(ui, monkeypatch, capsys, full_input):
 
 
 @pytest.mark.parametrize(
-    "invalid_input",
+    "invalid_input, expected",
     [
         ("-John Doe test@gmail.com", "Incorrect first name."),
         ("John -Doe test@gmail.com", "Incorrect last name."),
         ("John Doe test@gmail", "Incorrect email."),
     ],
 )
-def test_invalid_input(ui, monkeypatch, capsys, invalid_input):
-    inp, expected = invalid_input
-    monkeypatch.setattr("sys.stdin", StringIO(f"add students\n{inp}\nback\nexit\n"))
+def test_invalid_input(ui, monkeypatch, capsys, invalid_input, expected):
+    monkeypatch.setattr("sys.stdin", StringIO(f"add students\n{invalid_input}\nback\nexit\n"))
     ui.start()
     captured = capsys.readouterr()
     assert (

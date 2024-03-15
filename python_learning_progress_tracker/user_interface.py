@@ -31,12 +31,16 @@ class UserInterface:
     ) -> tuple[str, str, str]:
         if len(student_info) >= 4:
             first_name = student_info[0]
-            last_name = " ".join(student_info[1: len(student_info) - 1])
+            last_name = " ".join(student_info[1: -1])
             email = student_info[-1]
         else:
             first_name, last_name, email = student_info
 
         return first_name, last_name, email
+
+    @staticmethod
+    def __split_input(choice: str) -> list[str]:
+        return choice.split()
 
     def __add_student_choice(self):
         while True:
@@ -47,7 +51,7 @@ class UserInterface:
                 )
                 break
 
-            student_info = choice.split()
+            student_info = UserInterface.__split_input(choice)
 
             if not UserInterface.__validate_number_of_inputs(student_info):
                 continue

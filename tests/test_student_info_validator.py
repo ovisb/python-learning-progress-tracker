@@ -57,7 +57,6 @@ def test_invalid_email(capsys, email):
     assert captured.out.strip() == "Incorrect email."
 
 
-@pytest.mark.parametrize("valid_data", [(("John", "Don", "test@gmail.com"), True)])
-def test_valid(monkeypatch, capsys, valid_data):
-    inp, expected = valid_data
-    assert StudentValidator.validate_student_info(inp) is expected
+@pytest.mark.parametrize("valid_data, expected", [(("John", "Don", "test@gmail.com"), True)])
+def test_valid(monkeypatch, capsys, valid_data, expected):
+    assert StudentValidator.validate_student_info(valid_data) is expected
