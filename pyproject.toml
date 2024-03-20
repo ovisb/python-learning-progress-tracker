@@ -50,7 +50,9 @@ source = ["python_learning_progress_tracker"]
 [tool.coverage.report]
 show_missing = true
 omit = [ "*__init__*", "*main.py*" ]
-
+exclude_also = [
+    "def __repr__"
+]
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"

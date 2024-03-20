@@ -2,7 +2,6 @@ from python_learning_progress_tracker.student import Student
 
 
 class StudentManagement:
-
     def __init__(self) -> None:
         self.__students: dict[int, dict] = {}
         self.__student_id = 1000

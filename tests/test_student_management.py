@@ -4,9 +4,6 @@ from python_learning_progress_tracker.student import Student
 from python_learning_progress_tracker.student_management import StudentManagement
 
 
-# student_manager = StudentManagement()
-
-
 @pytest.fixture()
 def student_manager():
     return StudentManagement()
