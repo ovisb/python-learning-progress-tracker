@@ -43,3 +43,10 @@ def test_increment_student_ids(student_manager):
     new_ids = set(student_manager.students.keys())
 
     assert new_ids == initial_ids.union({1000, 1001, 1002})
+
+
+def test_fail_user_add_duplicate_email(student_manager):
+    student_manager.add_student(Student("Jean", "Clause", "jc@google.it"))
+
+    with pytest.raises(ValueError):
+        student_manager.add_student(Student("John", "Curt", "jc@google.it"))
