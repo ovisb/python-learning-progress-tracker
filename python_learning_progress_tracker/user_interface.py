@@ -18,14 +18,6 @@ class UserInterface:
         return student_info
 
     @staticmethod
-    def __validate_number_of_inputs(student_info: list[str]) -> bool:
-        if len(student_info) < 3:
-            print("Incorrect credentials.")
-            return False
-
-        return True
-
-    @staticmethod
     def __treat_exception_multiple_last_name(
             student_info: list[str],
     ) -> tuple[str, str, str]:
@@ -53,18 +45,38 @@ class UserInterface:
 
             student_info = UserInterface.__split_input(choice)
 
-            if not UserInterface.__validate_number_of_inputs(student_info):
+            if not UserInterface.__validate_input(student_info):
                 continue
 
             updated_student_info = UserInterface.__treat_exception_multiple_last_name(
                 student_info
             )
 
-            if not StudentValidator.validate_student_info(updated_student_info):
+            if not UserInterface.__validate_student_info(updated_student_info):
                 continue
 
             self.__student_manager.add_student(Student(*updated_student_info))
             print("The student has been added.")
+
+    @staticmethod
+    def __validate_input(student_info: list[str]) -> bool:
+        try:
+            StudentValidator.validate_number_of_inputs(student_info)
+        except ValueError as vl:
+            print(vl)
+            return False
+
+        return True
+
+    @staticmethod
+    def __validate_student_info(student_info: tuple[str, str, str]) -> bool:
+        try:
+            StudentValidator.validate_student_info(student_info)
+        except ValueError as vl:
+            print(vl)
+            return False
+
+        return True
 
     def start(self) -> None:
         while True:

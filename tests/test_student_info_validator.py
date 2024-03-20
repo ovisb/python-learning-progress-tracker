@@ -21,9 +21,8 @@ from python_learning_progress_tracker.student_input_validator import StudentVali
 )
 def test_invalid_first_name(capsys, first_name):
     inp = (first_name, "placeholder_last", "placeholder_email")
-    assert StudentValidator.validate_student_info(inp) is False
-    captured = capsys.readouterr()
-    assert captured.out.strip() == "Incorrect first name."
+    with pytest.raises(ValueError):
+        StudentValidator.validate_student_info(inp)
 
 
 @pytest.mark.parametrize(
@@ -44,19 +43,25 @@ def test_invalid_first_name(capsys, first_name):
 )
 def test_invalid_last_name(capsys, last_name):
     inp = ("John", last_name, "placeholder_email")
-    assert StudentValidator.validate_student_info(inp) is False
-    captured = capsys.readouterr()
-    assert captured.out.strip() == "Incorrect last name."
+    with pytest.raises(ValueError):
+        StudentValidator.validate_student_info(inp)
 
 
 @pytest.mark.parametrize("email", ["test", "-test", "testasdl", "123", "test@gmail"])
 def test_invalid_email(capsys, email):
     inp = ("John", "Don", email)
-    assert StudentValidator.validate_student_info(inp) is False
-    captured = capsys.readouterr()
-    assert captured.out.strip() == "Incorrect email."
+    with pytest.raises(ValueError):
+        StudentValidator.validate_student_info(inp)
 
 
-@pytest.mark.parametrize("valid_data, expected", [(("John", "Don", "test@gmail.com"), True)])
+@pytest.mark.parametrize("valid_data, expected", [(("John", "Don", "test@gmail.com"), None)])
 def test_valid(monkeypatch, capsys, valid_data, expected):
     assert StudentValidator.validate_student_info(valid_data) is expected
+
+
+@pytest.mark.parametrize("invalid_input", ["John", "a b", "1 John"]
+                         )
+def test_too_less_input(invalid_input):
+    data = invalid_input.split()
+    with pytest.raises(ValueError):
+        StudentValidator.validate_number_of_inputs(data)

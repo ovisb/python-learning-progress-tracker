@@ -23,20 +23,20 @@ class StudentValidator:
     def __length_bellow_threshold(name):
         return len(name) < 2
 
+    @staticmethod
+    def validate_number_of_inputs(student_info: list[str]) -> None:
+        if len(student_info) < 3:
+            raise ValueError("Incorrect credentials.")
+
     @classmethod
-    def validate_student_info(cls, student_info: tuple[str, str, str]) -> bool:
+    def validate_student_info(cls, student_info: tuple[str, str, str]) -> None:
         first_name, last_name, email = student_info
 
         if not cls.__validate_name(first_name):
-            print("Incorrect first name.")
-            return False
+            raise ValueError("Incorrect first name.")
 
         if not cls.__validate_name(last_name):
-            print("Incorrect last name.")
-            return False
+            raise ValueError("Incorrect last name.")
 
         if not cls.__validate_email(email):
-            print("Incorrect email.")
-            return False
-
-        return True
+            raise ValueError("Incorrect email.")
