@@ -13,7 +13,7 @@ class StudentManagement:
         if student_email in self.__unique_emails:
             raise ValueError("This email is already taken.")
 
-        self.__students[self.__student_id] = {"student_data": student, "course_progress": []}
+        self.__students.setdefault(self.__student_id, {"student_data": student, "course_progress": []})
         self.__student_id += 1
         self.__unique_emails.add(student_email)
 
