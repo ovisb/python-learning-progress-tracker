@@ -14,3 +14,7 @@ class MenuChoiceValidator:
     @staticmethod
     def is_add_student(choice: str) -> bool:
         return choice == "add students"
+
+    @staticmethod
+    def is_list_students(choice: str) -> bool:
+        return choice == "list"

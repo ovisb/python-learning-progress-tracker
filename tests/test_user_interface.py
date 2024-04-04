@@ -54,8 +54,8 @@ def test_add_single_student_success(ui, monkeypatch, capsys, full_input):
     ui.start()
     captured = capsys.readouterr()
     assert (
-        captured.out.strip() == "Enter student credentials or 'back' to return: \n"
-        "The student has been added.\nTotal 1 students have been added.\nBye!"
+            captured.out.strip() == "Enter student credentials or 'back' to return: \n"
+                                    "The student has been added.\nTotal 1 students have been added.\nBye!"
     )
 
 
@@ -63,12 +63,12 @@ def test_add_single_student_success(ui, monkeypatch, capsys, full_input):
     "full_input",
     [
         (
-            "Jean-Clause van Helsing jc@google.it",
-            "James Dean james.dean@gmail.com",
-            "Andrew Tim Johnson maryj@google.com",
-            "Tom Cruise tom.cruise@gmail.com",
-            "Robert Jemison Van de Graaff robertvdgraaff@mit.edu",
-            "O'Neill Bool onneilbool@mit.edu",
+                "Jean-Clause van Helsing jc@google.it",
+                "James Dean james.dean@gmail.com",
+                "Andrew Tim Johnson maryj@google.com",
+                "Tom Cruise tom.cruise@gmail.com",
+                "Robert Jemison Van de Graaff robertvdgraaff@mit.edu",
+                "O'Neill Bool onneilbool@mit.edu",
         )
     ],
 )
@@ -79,9 +79,9 @@ def test_add_multiple_student_success(ui, monkeypatch, capsys, full_input):
     ui.start()
     captured = capsys.readouterr()
     assert (
-        captured.out.strip()
-        == f"Enter student credentials or 'back' to return: \n{added_success}\n"
-        f"Total {len(full_input)} students have been added.\nBye!"
+            captured.out.strip()
+            == f"Enter student credentials or 'back' to return: \n{added_success}\n"
+               f"Total {len(full_input)} students have been added.\nBye!"
     )
 
 
@@ -98,8 +98,11 @@ def test_invalid_input(ui, monkeypatch, capsys, invalid_input, expected):
     ui.start()
     captured = capsys.readouterr()
     assert (
-        captured.out.strip()
-        == f"Enter student credentials or 'back' to return: \n{expected}\nTotal 0 students have been added.\nBye!"
+            captured.out.strip()
+            == f"Enter student credentials or 'back' to return: \n"
+               f"{expected}\n"
+               f"Total 0 students have been added.\n"
+               f"Bye!"
     )
 
 
@@ -111,6 +114,49 @@ def test_fail_add_student_wrong_info(ui, monkeypatch, capsys, bad_info):
     ui.start()
     captured = capsys.readouterr()
     assert (
-        captured.out.strip()
-        == "Enter student credentials or 'back' to return: \nIncorrect credentials.\nTotal 0 students have been added.\nBye!"
+            captured.out.strip()
+            == "Enter student credentials or 'back' to return: \n"
+               "Incorrect credentials.\n"
+               "Total 0 students have been added.\n"
+               "Bye!"
+    )
+
+
+def test_ui_list_no_students(ui, monkeypatch, capsys):
+    monkeypatch.setattr("sys.stdin", StringIO(f"list\nexit"))
+    ui.start()
+    captured = capsys.readouterr()
+    assert captured.out.strip() == f"No students found\nBye!"
+
+
+def test_ui_list_single_student_id(ui, monkeypatch, capsys):
+    monkeypatch.setattr("sys.stdin", StringIO(f"add students\nJames Dean jd@google.it\nback\nlist\nexit"))
+    ui.start()
+    captured = capsys.readouterr()
+    assert (
+            captured.out.strip() ==
+            "Enter student credentials or 'back' to return: \n"
+            "The student has been added.\n"
+            "Total 1 students have been added.\n"
+            "Students: \n"
+            "1000\n"
+            "Bye!"
+    )
+
+
+def test_ui_list_multiple_student_ids(ui, monkeypatch, capsys):
+    monkeypatch.setattr("sys.stdin", StringIO(
+        f"add students\nJames Dean jd@google.it\nJohn Doe john.doe@google.it\nback\nlist\nexit"))
+    ui.start()
+    captured = capsys.readouterr()
+    assert (
+            captured.out.strip() ==
+            "Enter student credentials or 'back' to return: \n"
+            "The student has been added.\n"
+            "The student has been added.\n"
+            "Total 2 students have been added.\n"
+            "Students: \n"
+            "1000\n"
+            "1001\n"
+            "Bye!"
     )

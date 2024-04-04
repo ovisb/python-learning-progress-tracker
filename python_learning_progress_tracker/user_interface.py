@@ -1,3 +1,5 @@
+from typing import Union
+
 from python_learning_progress_tracker.menu_choice_validator import MenuChoiceValidator
 from python_learning_progress_tracker.student import Student
 from python_learning_progress_tracker.student_input_validator import StudentValidator
@@ -58,6 +60,9 @@ class UserInterface:
             self.__student_manager.add_student(Student(*updated_student_info))
             print("The student has been added.")
 
+    def __list_students(self) -> None:
+        print(self.__student_manager)
+
     @staticmethod
     def __validate_input(student_info: list[str]) -> bool:
         try:
@@ -92,6 +97,10 @@ class UserInterface:
 
             if MenuChoiceValidator.is_empty_input(choice):
                 print("No input.")
+                continue
+
+            if MenuChoiceValidator.is_list_students(choice):
+                self.__list_students()
                 continue
 
             if MenuChoiceValidator.is_add_student(choice):
