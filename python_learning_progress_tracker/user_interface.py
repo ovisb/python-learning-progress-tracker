@@ -1,5 +1,3 @@
-from typing import Union
-
 from python_learning_progress_tracker.menu_choice_validator import MenuChoiceValidator
 from python_learning_progress_tracker.student import Student
 from python_learning_progress_tracker.student_input_validator import StudentValidator
@@ -11,11 +9,13 @@ class UserInterface:
         self.__student_manager = student_manager
 
     @staticmethod
-    def __get_input() -> str:
+    def __get_choice() -> str:
+        """Get choice from user input."""
         return input().strip()
 
     @staticmethod
-    def __get_user_details() -> str:
+    def __get_student_details() -> str:
+        """Get student details from user input."""
         student_info = input()
         return student_info
 
@@ -23,6 +23,7 @@ class UserInterface:
     def __treat_exception_multiple_last_name(
             student_info: list[str],
     ) -> tuple[str, str, str]:
+        """Treat exception where student may have multiple names."""
         if len(student_info) >= 4:
             first_name = student_info[0]
             last_name = " ".join(student_info[1: -1])
@@ -34,11 +35,13 @@ class UserInterface:
 
     @staticmethod
     def __split_input(choice: str) -> list[str]:
+        """Split input into a list of strings."""
         return choice.split()
 
-    def __add_student_choice(self):
+    def __add_student(self):
+        """Add student to studentManagement datastore."""
         while True:
-            choice = UserInterface.__get_user_details()
+            choice = UserInterface.__get_student_details()
             if MenuChoiceValidator.is_back(choice):
                 print(
                     f"Total {len(self.__student_manager)} students have been added."
@@ -47,7 +50,7 @@ class UserInterface:
 
             student_info = UserInterface.__split_input(choice)
 
-            if not UserInterface.__validate_input(student_info):
+            if not UserInterface.__validate_input_student_add(student_info):
                 continue
 
             updated_student_info = UserInterface.__treat_exception_multiple_last_name(
@@ -57,19 +60,18 @@ class UserInterface:
             if not UserInterface.__validate_student_info(updated_student_info):
                 continue
 
-            self.__student_manager.add_student(Student(*updated_student_info))
-            print("The student has been added.")
+            try:
+                self.__student_manager.add_student(Student(*updated_student_info))
+                print("The student has been added.")
+            except ValueError as vl:
+                print(vl)
 
     def __find_student(self) -> None:
+        """Find student from studentManagement datastore."""
         while True:
-            choice = UserInterface.__get_input().lower()
+            choice = UserInterface.__get_choice().lower()
             if MenuChoiceValidator.is_back(choice):
                 break
-
-            # to implement validation
-            if not StudentValidator.validate_input_student_id(choice):
-                print("Please input a non-negative number as the ID.")
-                continue
 
             try:
                 print(self.__student_manager.find_student(choice))
@@ -78,8 +80,9 @@ class UserInterface:
                 continue
 
     def __add_student_points(self) -> None:
+        """Add student points to studentManagement datastore."""
         while True:
-            choice = UserInterface.__get_input().lower()
+            choice = UserInterface.__get_choice().lower()
             if MenuChoiceValidator.is_back(choice):
                 break
 
@@ -98,10 +101,12 @@ class UserInterface:
                 continue
 
     def __list_students(self) -> None:
+        """List students from studentManagement datastore."""
         print(self.__student_manager)
 
     @staticmethod
-    def __validate_input(student_info: list[str]) -> bool:
+    def __validate_input_student_add(student_info: list[str]) -> bool:
+        """Validate the input during student add."""
         try:
             StudentValidator.validate_number_of_inputs(student_info)
         except ValueError as vl:
@@ -112,6 +117,7 @@ class UserInterface:
 
     @staticmethod
     def __validate_student_info(student_info: tuple[str, str, str]) -> bool:
+        """Validate student info and return True if valid."""
         try:
             StudentValidator.validate_student_info(student_info)
         except ValueError as vl:
@@ -121,8 +127,9 @@ class UserInterface:
         return True
 
     def start(self) -> None:
+        """Start the program."""
         while True:
-            choice = UserInterface.__get_input()
+            choice = UserInterface.__get_choice()
 
             if MenuChoiceValidator.is_exit(choice):
                 print("Bye!")
@@ -142,7 +149,7 @@ class UserInterface:
 
             if MenuChoiceValidator.is_add_student(choice):
                 print("Enter student credentials or 'back' to return: ")
-                self.__add_student_choice()
+                self.__add_student()
             elif MenuChoiceValidator.is_add_points(choice):
                 print("Enter an id and points or 'back' to return: ")
                 self.__add_student_points()

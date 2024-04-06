@@ -64,8 +64,24 @@ def test_add_single_student_success(ui_empty, monkeypatch, capsys, full_input):
     ui_empty.start()
     captured = capsys.readouterr()
     assert (
-            captured.out.strip() == "Enter student credentials or 'back' to return: \n"
-                                    "The student has been added.\nTotal 1 students have been added.\nBye!"
+            captured.out.strip() ==
+            "Enter student credentials or 'back' to return: \n"
+            "The student has been added.\nTotal 1 students have been added.\nBye!"
+    )
+
+
+def test_ui_fail_add_student_non_unique_email(ui_empty, monkeypatch, capsys):
+    monkeypatch.setattr("sys.stdin", StringIO(
+        "add students\nJean-Clause van Helsing jc@google.it\nJohn Carl jc@google.it\nback\nexit\n")
+                        )
+    ui_empty.start()
+    captured = capsys.readouterr()
+    assert (
+        captured.out.strip() ==
+        "Enter student credentials or 'back' to return: \n",
+        "The student has been added.\n",
+        "This email is already taken.\n",
+        "Bye!"
     )
 
 
@@ -151,7 +167,7 @@ def test_ui_list_single_student_id(ui_empty, monkeypatch, capsys):
             "Students: \n"
             "1000\n"
             "Bye!"
-    )
+    ), "Should add and list one student ID."
 
 
 def test_ui_list_multiple_student_ids(ui_empty, monkeypatch, capsys):
@@ -202,15 +218,16 @@ def test_ui_found_student_id(ui_with_student, monkeypatch, capsys):
 
 
 def test_ui_add_points(ui_with_student, monkeypatch, capsys):
-    input_commands = f"add points\n-1000 5 5 5 5\n10001 5 5 5 5\n1000 5 5 5 5\nback\nexit\n"
+    input_commands = f"add points\ntesting 5 5 5 5\n10001 5 5 5 5\n1000 4 3 2\n1000 5 5 5 5\nback\nexit\n"
     monkeypatch.setattr("sys.stdin", StringIO(input_commands))
     ui_with_student.start()
     captured = capsys.readouterr()
     assert (
-        captured.out.strip() ==
-        "Enter an id and points or 'back' to return: \n"
-        "Incorrect points format.\n"
-        "No student is found for id=10001.\n"
-        "Points updated.\n"
-        "Bye!"
+            captured.out.strip() ==
+            "Enter an id and points or 'back' to return: \n"
+            "No student is found for id=testing.\n"
+            "No student is found for id=10001.\n"
+            "Incorrect points format.\n"
+            "Points updated.\n"
+            "Bye!"
     )

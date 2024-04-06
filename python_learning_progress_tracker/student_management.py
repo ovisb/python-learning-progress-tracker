@@ -53,6 +53,7 @@ class StudentManagement:
         return initial + "\n".join(self.students.keys())
 
     def __format_course_progress(self, student_id: str) -> str:
+        """Pretty print the course progress of a student."""
         course_progress = self.students[student_id]["course_progress"]
         new = []
         for key, val in course_progress.items():
@@ -61,7 +62,7 @@ class StudentManagement:
         return "; ".join(new)
 
     @property
-    def students(self):
+    def students(self) -> dict[str, dict]:
         """Return the dictionary containing student data."""
         return self.__students
 
