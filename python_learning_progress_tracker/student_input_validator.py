@@ -28,6 +28,19 @@ class StudentValidator:
         if len(student_info) < 3:
             raise ValueError("Incorrect credentials.")
 
+    @staticmethod
+    def validate_input_student_id(number: str) -> bool:
+        """Validate if string number is numeric"""
+        return number.isnumeric()
+
+    @staticmethod
+    def validate_points_input(points_text: str) -> bool:
+        points_inp = points_text.split()
+        if len(points_inp) < 5 or len(points_inp) > 5:
+            return False
+
+        return all([StudentValidator.validate_input_student_id(num) for num in points_inp])
+
     @classmethod
     def validate_student_info(cls, student_info: tuple[str, str, str]) -> None:
         first_name, last_name, email = student_info

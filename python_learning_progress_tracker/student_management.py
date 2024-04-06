@@ -1,3 +1,5 @@
+from typing import Union
+
 from python_learning_progress_tracker.student import Student
 
 
@@ -22,14 +24,25 @@ class StudentManagement:
         self.__student_id += 1
         self.__unique_emails.add(student_email)
 
+    def __student_id_exists(self, student_id: str) -> bool:
+        if student_id not in self.students:
+            return False
+        return True
+
     def add_points(self, student_id: str, points: tuple) -> None:
         """Add points to the course progress of a student."""
-        if student_id not in self.students:
+        if not self.__student_id_exists(student_id):
             raise ValueError(f"No student is found for id={student_id}.")
 
         course_progress = self.students[student_id]["course_progress"]
         for course, point in zip(course_progress.keys(), points):
             self.students[student_id]["course_progress"][course] += point
+
+    def find_student(self, student_id: str) -> Union[ValueError, str]:
+        if student_id not in self.students:
+            raise ValueError(f"No student is found for id={student_id}.")
+
+        return f"{student_id} points: {self.__format_course_progress(student_id)}"
 
     def __str__(self) -> str:
         """Return a string representation of the StudentManagement instance."""
@@ -38,6 +51,14 @@ class StudentManagement:
 
         initial = "Students: \n"
         return initial + "\n".join(self.students.keys())
+
+    def __format_course_progress(self, student_id: str) -> str:
+        course_progress = self.students[student_id]["course_progress"]
+        new = []
+        for key, val in course_progress.items():
+            new.append(f"{key}={val}")
+
+        return "; ".join(new)
 
     @property
     def students(self):

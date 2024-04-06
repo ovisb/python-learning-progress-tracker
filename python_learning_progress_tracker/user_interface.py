@@ -60,6 +60,43 @@ class UserInterface:
             self.__student_manager.add_student(Student(*updated_student_info))
             print("The student has been added.")
 
+    def __find_student(self) -> None:
+        while True:
+            choice = UserInterface.__get_input().lower()
+            if MenuChoiceValidator.is_back(choice):
+                break
+
+            # to implement validation
+            if not StudentValidator.validate_input_student_id(choice):
+                print("Please input a non-negative number as the ID.")
+                continue
+
+            try:
+                print(self.__student_manager.find_student(choice))
+            except ValueError as vl:
+                print(vl)
+                continue
+
+    def __add_student_points(self) -> None:
+        while True:
+            choice = UserInterface.__get_input().lower()
+            if MenuChoiceValidator.is_back(choice):
+                break
+
+            if not StudentValidator.validate_points_input(choice):
+                print("Incorrect points format.")
+                continue
+
+            try:
+                choice_list = choice.split()
+                student_id = choice_list[0]
+                points = tuple(int(num) for num in choice_list[1:])
+                self.__student_manager.add_points(student_id, points)
+                print("Points updated.")
+            except ValueError as vl:
+                print(vl)
+                continue
+
     def __list_students(self) -> None:
         print(self.__student_manager)
 
@@ -106,5 +143,11 @@ class UserInterface:
             if MenuChoiceValidator.is_add_student(choice):
                 print("Enter student credentials or 'back' to return: ")
                 self.__add_student_choice()
+            elif MenuChoiceValidator.is_add_points(choice):
+                print("Enter an id and points or 'back' to return: ")
+                self.__add_student_points()
+            elif MenuChoiceValidator.is_find_student(choice):
+                print("Enter an id or 'back' to return: ")
+                self.__find_student()
             else:
                 print("Error: unknown command!")

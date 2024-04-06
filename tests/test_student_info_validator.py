@@ -65,3 +65,26 @@ def test_too_less_input(invalid_input):
     data = invalid_input.split()
     with pytest.raises(ValueError):
         StudentValidator.validate_number_of_inputs(data)
+
+
+@pytest.mark.parametrize("valid_input, expected", [
+    ("1000", True),
+    ("0", True),
+    ("asd", False),
+    ("-100", False)
+])
+def test_id_not_numeric(valid_input, expected):
+    assert StudentValidator.validate_input_student_id(valid_input) is expected
+
+
+@pytest.mark.parametrize("inp, expected", [
+    ("1000", False),
+    ("-1000", False),
+    ("1000 5 5 5", False),
+    ("1000 5 5 5 5 5", False),
+    ("-1000 -5 -5 -5", False),
+    ("", False),
+    ("1000 5 5 5 5", True)
+])
+def test_points_input_data(inp, expected):
+    assert StudentValidator.validate_points_input(inp) is expected
