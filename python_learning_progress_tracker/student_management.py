@@ -8,6 +8,7 @@ class StudentManagement:
         self.__students: dict[str, dict] = {}
         self.__student_id = 1000
         self.__unique_emails = set()
+        self.__default_courses: dict[str, int] = {"Python": 0, "DSA": 0, "Databases": 0, "Flask": 0}
 
     def add_student(self, student: "Student") -> None:
         """Add a new student to the management system."""
@@ -18,7 +19,7 @@ class StudentManagement:
 
         default_student_data = {
             "student_data": student,
-            "course_progress": {"Python": 0, "DSA": 0, "Databases": 0, "Flask": 0}
+            "course_progress": self.__default_courses.copy()
         }
         self.students.setdefault(str(self.__student_id), default_student_data)
         self.__student_id += 1
@@ -65,6 +66,10 @@ class StudentManagement:
     def students(self) -> dict[str, dict]:
         """Return the dictionary containing student data."""
         return self.__students
+
+    @property
+    def default_courses(self) -> dict[str, int]:
+        return self.__default_courses
 
     def __len__(self) -> int:
         """Return the number of students in the management system."""
