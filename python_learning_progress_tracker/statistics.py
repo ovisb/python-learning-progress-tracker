@@ -49,6 +49,26 @@ Hardest course: n/a"""
             ]
         )
 
+    def highest_activity(self) -> str:
+        max_val = max(self.__student_management.activity_tracker.activity_count.values())
+
+        return self.__filter_by(self.__student_management.activity_tracker.activity_count, max_val)
+
+    def lowest_activity(self) -> str:
+        min_val = min(self.__student_management.activity_tracker.activity_count.values())
+
+        return self.__filter_by(self.__student_management.activity_tracker.activity_count, min_val)
+
+    @staticmethod
+    def __filter_by(obj, value):
+        return ", ".join(
+            [
+                course
+                for course, score in obj.items()
+                if score == value
+            ]
+        )
+
     def __total_points_per_course(self) -> dict[str, int]:
         """Get total points per course enrolment"""
         total_points_per_course = self.__student_management.default_courses.copy()
@@ -58,13 +78,3 @@ Hardest course: n/a"""
                     total_points_per_course[course] += score
 
         return total_points_per_course
-
-    def __total_enrolments_per_course(self) -> dict[str, int]:
-        """Get total number of enrolments per course"""
-        enrolments = self.__student_management.default_courses.copy()
-        for data in self.__student_management.students.values():
-            for course, score in data["course_progress"].items():
-                if score > 0:
-                    enrolments[course] += 1
-
-        return enrolments

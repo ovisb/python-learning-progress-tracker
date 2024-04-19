@@ -31,14 +31,16 @@ def student_manager_with_one_student(student_management):
 def student_manager_with_two_student(student_management):
     student1 = Student("Jean", "Clause", "jc@google.it")
     student2 = Student("John", "Doe", "jd@google.it")
-    points1 = 5, 0, 0, 4
-    points2 = 2, 0, 0, 3
+    points1_s1 = 4, 0, 0, 8
+    points2_s1 = 0, 0, 0, 5
+    points1_s2 = 0, 8, 0, 4
 
     student_management.add_student(student1)
     student_management.add_student(student2)
 
-    student_management.add_points("1000", points1)
-    student_management.add_points("1001", points2)
+    student_management.add_points("1000", points1_s1)
+    student_management.add_points("1000", points2_s1)
+    student_management.add_points("1001", points1_s2)
 
     return Statistics(student_management)
 
@@ -70,8 +72,16 @@ def test_least_popular_single(student_manager_with_one_student):
 
 
 def test_most_popular_multi(student_manager_with_two_student):
-    assert student_manager_with_two_student.most_popular() == "Python, Flask"
+    assert student_manager_with_two_student.most_popular() == "Flask"
 
 
 def test_least_popular_multi(student_manager_with_two_student):
-    assert student_manager_with_two_student.least_popular() == "DSA, Databases"
+    assert student_manager_with_two_student.least_popular() == "Databases"
+
+
+def test_highest_activity(student_manager_with_two_student):
+    assert student_manager_with_two_student.highest_activity() == "Flask"
+
+
+def test_lowest_activity(student_manager_with_two_student):
+    assert student_manager_with_two_student.lowest_activity() == "Databases"

@@ -1,6 +1,7 @@
 from typing import Union
 
 from python_learning_progress_tracker.student import Student
+from python_learning_progress_tracker.activity_tracker import ActivityTracker
 
 
 class StudentManagement:
@@ -9,6 +10,7 @@ class StudentManagement:
         self.__student_id = 1000
         self.__unique_emails = set()
         self.__default_courses: dict[str, int] = {"Python": 0, "DSA": 0, "Databases": 0, "Flask": 0}
+        self.__activity_tracker = ActivityTracker(self.__default_courses.copy())
 
     def add_student(self, student: "Student") -> None:
         """Add a new student to the management system."""
@@ -38,6 +40,9 @@ class StudentManagement:
         course_progress = self.students[student_id]["course_progress"]
         for course, point in zip(course_progress.keys(), points):
             self.students[student_id]["course_progress"][course] += point
+
+            if point > 0:
+                self.__activity_tracker.increment_activity(course)
 
     def find_student(self, student_id: str) -> Union[ValueError, str]:
         if student_id not in self.students:
@@ -70,6 +75,10 @@ class StudentManagement:
     @property
     def default_courses(self) -> dict[str, int]:
         return self.__default_courses
+
+    @property
+    def activity_tracker(self) -> ActivityTracker:
+        return self.__activity_tracker
 
     def __len__(self) -> int:
         """Return the number of students in the management system."""

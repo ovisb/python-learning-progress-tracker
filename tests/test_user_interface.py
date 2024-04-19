@@ -25,7 +25,7 @@ def test_start_exit_message(ui_empty, monkeypatch, capsys):
     monkeypatch.setattr("sys.stdin", StringIO("exit\n"))
     ui_empty.start()
     captured = capsys.readouterr()
-    assert captured.out.strip() == "Bye!"
+    assert captured.out.strip() == "Bye!", "It should exit and respond with 'Bye!'."
 
 
 def test_back_exit_message(ui_empty, monkeypatch, capsys):
