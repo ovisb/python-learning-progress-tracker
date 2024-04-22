@@ -45,6 +45,7 @@ class StudentManagement:
                 self.__activity_tracker.increment_activity(course)
 
     def find_student(self, student_id: str) -> Union[ValueError, str]:
+        """Find a student by its ID and raise an error if it already exists."""
         if student_id not in self.students:
             raise ValueError(f"No student is found for id={student_id}.")
 
@@ -68,13 +69,14 @@ class StudentManagement:
         return "; ".join(new)
 
     @property
+    def available_courses(self) -> list[str]:
+        """Return a list of available courses."""
+        return list(self.__default_courses.keys())
+
+    @property
     def students(self) -> dict[str, dict]:
         """Return the dictionary containing student data."""
         return self.__students
-
-    @property
-    def default_courses(self) -> dict[str, int]:
-        return self.__default_courses
 
     @property
     def activity_tracker(self) -> ActivityTracker:

@@ -8,4 +8,5 @@ class ActivityTracker:
 
     @property
     def activity_count(self):
+        """return activity count."""
         return self.__activity_count_track
