@@ -5,6 +5,8 @@ class Statistics:
 
     def __init__(self, student_management: StudentManagement) -> None:
         self.__student_management = student_management
+        self.__enrolments = self.__count_total_submissions_and_points_per_course()
+        self.__activity_count = self.__student_management.activity_tracker.activity_count
 
     def __str__(self) -> str:
         """ Returns a string representation of the Statistics object """
@@ -17,89 +19,87 @@ Hardest course: {self.__hardest_course()}"""
 
     def __most_popular(self) -> str:
         """Returns the most popular completed courses"""
-        enrolments = self.__count_total_submissions_and_points_per_course()
 
-        if not enrolments:
+        if not self.__enrolments:
             return "n/a"
 
-        max_val = max([item['submissions'] for item in enrolments.values()])
+        max_val = max([item['submissions'] for item in self.__enrolments.values()])
 
         return ", ".join(
             [
                 course
-                for course, enrolment_times in enrolments.items()
+                for course, enrolment_times in self.__enrolments.items()
                 if enrolment_times["submissions"] == max_val
             ]
         )
 
     def __least_popular(self) -> str:
         """Returns the least popular completed courses"""
-        enrolments = self.__count_total_submissions_and_points_per_course()
 
-        if not enrolments:
+        if not self.__enrolments:
             return "n/a"
 
-        min_val = min([item['submissions'] for item in enrolments.values()])
+        min_val = min([item['submissions'] for item in self.__enrolments.values()])
 
         return ", ".join(
             [
                 course
-                for course, enrolment_times in enrolments.items()
+                for course, enrolment_times in self.__enrolments.items()
                 if enrolment_times["submissions"] == min_val
             ]
         )
 
     def __highest_activity(self) -> str:
         """Returns the most popular completed courses"""
-        max_val = max(self.__student_management.activity_tracker.activity_count.values())
+        max_val = max(self.__activity_count.values())
 
         if max_val == 0:
             return "n/a"
 
-        return self.__filter_courses_by_value(self.__student_management.activity_tracker.activity_count, max_val)
+        return self.__filter_courses_by_value(self.__activity_count, max_val)
 
     def __lowest_activity(self) -> str:
         """Returns the least popular completed courses"""
-        min_val = min(self.__student_management.activity_tracker.activity_count.values())
-        max_val = max(self.__student_management.activity_tracker.activity_count.values())
+        min_val = min(self.__activity_count.values())
+        max_val = max(self.__activity_count.values())
 
         if min_val == 0 and max_val == 0:
             return "n/a"
 
-        return self.__filter_courses_by_value(self.__student_management.activity_tracker.activity_count, min_val)
+        return self.__filter_courses_by_value(self.__activity_count, min_val)
 
     def __hardest_course(self) -> str:
         """Returns the hardest completed course"""
         try:
-            hardest = self.__calculate_highest_lowest()[0]
+            hardest_course = self.__calculate_highest_lowest()[0]
         except IndexError:
             return "n/a"
 
-        return hardest[0]
+        return hardest_course[0]
 
     def __easiest_course(self) -> str:
         """Returns the easiest completed course"""
         try:
-            easiest = self.__calculate_highest_lowest()[-1]
+            easiest_course = self.__calculate_highest_lowest()[-1]
         except IndexError:
             return "n/a"
 
-        return easiest[0]
+        return easiest_course[0]
 
     def __calculate_highest_lowest(self) -> list[tuple[str, float]]:
-        """Returns a list of tuples containing course and it's average completed, sorted by hardest to lowest."""
-        new = []
+        """Returns a list of tuples containing course, and it's average completed, sorted by hardest to lowest."""
+        list_of_courses_averages = []
         total_points_per_course_object = self.__total_points_per_course()
         for course in self.__student_management.available_courses:
             count = self.__count_times_by_course(course)
             if count > 0:
                 points_per_course = total_points_per_course_object[course]
-                activity_count_per_course = self.__student_management.activity_tracker.activity_count[course]
+                activity_count_per_course = self.__activity_count[course]
                 average = self.__calculate_average(points_per_course, activity_count_per_course)
-                new.append((course, average))
+                list_of_courses_averages.append((course, average))
 
-        new.sort(key=lambda x: x[1])
-        return new
+        list_of_courses_averages.sort(key=lambda x: x[1])
+        return list_of_courses_averages
 
     @staticmethod
     def __calculate_average(total_points_per_course: int, total_submissions_per_course: int) -> float:
