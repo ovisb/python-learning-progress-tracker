@@ -17,4 +17,6 @@ def empty_activity_tracker():
 ])
 def test_activity_increments_successfully(empty_activity_tracker, course, expected):
     empty_activity_tracker.increment_activity(course)
-    assert empty_activity_tracker.activity_count[course] == expected, "Should increment course by one."
+    assert (
+        empty_activity_tracker.activity_count[course] == expected
+    ), "Should increment course by one."

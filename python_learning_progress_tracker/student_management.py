@@ -10,6 +10,7 @@ class StudentManagement:
         self.__student_id = 1000
         self.__unique_emails = set()
         self.__default_courses: dict[str, int] = {"Python": 0, "DSA": 0, "Databases": 0, "Flask": 0}
+        self.__accepted_courses = {"python": "Python", "dsa": "DSA", "databases": "Databases", "flask": "Flask"}
         self.__activity_tracker = ActivityTracker(self.__default_courses.copy())
 
     def add_student(self, student: "Student") -> None:
@@ -81,6 +82,10 @@ class StudentManagement:
     @property
     def activity_tracker(self) -> ActivityTracker:
         return self.__activity_tracker
+
+    @property
+    def accepted_courses(self) -> dict[str, str]:
+        return self.__accepted_courses
 
     def __len__(self) -> int:
         """Return the number of students in the management system."""

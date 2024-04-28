@@ -5,8 +5,17 @@ class Statistics:
 
     def __init__(self, student_management: StudentManagement) -> None:
         self.__student_management = student_management
+        self.__initialize_stats_vars()
+
+    def __initialize_stats_vars(self):
         self.__enrolments = self.__count_total_submissions_and_points_per_course()
         self.__activity_count = self.__student_management.activity_tracker.activity_count
+        self.__max_points_per_course = {"Python": 600, "DSA": 400, "Databases": 480, "Flask": 550}
+        self.__lowest_activity_count = min(self.__activity_count.values())
+        self.__highest_activity_count = max(self.__activity_count.values())
+        self.__submissions_count = [item['submissions'] for item in self.__enrolments.values()]
+        self.__submissions_count_max_val = max(self.__submissions_count) if self.__submissions_count else 0
+        self.__submissions_count_min_val = min(self.__submissions_count) if self.__submissions_count else 0
 
     def __str__(self) -> str:
         """ Returns a string representation of the Statistics object """
@@ -23,15 +32,7 @@ Hardest course: {self.__hardest_course()}"""
         if not self.__enrolments:
             return "n/a"
 
-        max_val = max([item['submissions'] for item in self.__enrolments.values()])
-
-        return ", ".join(
-            [
-                course
-                for course, enrolment_times in self.__enrolments.items()
-                if enrolment_times["submissions"] == max_val
-            ]
-        )
+        return ", ".join(self.__filter_submissions_by(self.__submissions_count_max_val))
 
     def __least_popular(self) -> str:
         """Returns the least popular completed courses"""
@@ -39,34 +40,37 @@ Hardest course: {self.__hardest_course()}"""
         if not self.__enrolments:
             return "n/a"
 
-        min_val = min([item['submissions'] for item in self.__enrolments.values()])
+        if self.__submissions_count_min_val == self.__submissions_count_max_val:
+            return "n/a"
 
-        return ", ".join(
-            [
-                course
-                for course, enrolment_times in self.__enrolments.items()
-                if enrolment_times["submissions"] == min_val
-            ]
-        )
+        return ", ".join(self.__filter_submissions_by(self.__submissions_count_min_val))
+
+    def __filter_submissions_by(self, value: int):
+        """Filters the submissions by the max or min value"""
+        return [
+            course
+            for course, enrolment_times in self.__enrolments.items()
+            if enrolment_times["submissions"] == value
+        ]
 
     def __highest_activity(self) -> str:
         """Returns the most popular completed courses"""
-        max_val = max(self.__activity_count.values())
 
-        if max_val == 0:
+        if self.__highest_activity_count == 0:
             return "n/a"
 
-        return self.__filter_courses_by_value(self.__activity_count, max_val)
+        return self.__filter_courses_by_value(self.__activity_count, self.__highest_activity_count)
 
     def __lowest_activity(self) -> str:
         """Returns the least popular completed courses"""
-        min_val = min(self.__activity_count.values())
-        max_val = max(self.__activity_count.values())
 
-        if min_val == 0 and max_val == 0:
+        if self.__lowest_activity_count == 0 and self.__highest_activity_count == 0:
             return "n/a"
 
-        return self.__filter_courses_by_value(self.__activity_count, min_val)
+        if self.__lowest_activity_count == self.__highest_activity_count:
+            return "n/a"
+
+        return self.__filter_courses_by_value(self.__activity_count, self.__lowest_activity_count)
 
     def __hardest_course(self) -> str:
         """Returns the hardest completed course"""
@@ -150,3 +154,25 @@ Hardest course: {self.__hardest_course()}"""
                     total_submissions_and_points[course]["points"] += score
 
         return total_submissions_and_points
+
+    def fetch_completion_info(self, course: str) -> list[tuple[str, int, float]]:
+        """Return information about students which have more than 0 points on given course
+        Get info about student id, it's course score and completed percent value.
+        """
+        statistics_per_course = []
+        for student_id, data in self.__student_management.students.items():
+            for crs, score in data["course_progress"].items():
+                if crs == course and score > 0:
+                    completed_percentage = self.__calculate_course_completed_percentage(course, score)
+                    statistics_per_course.append((student_id, score, round(completed_percentage, 1)))
+
+        if statistics_per_course:
+            statistics_per_course.sort(key=lambda x: x[2], reverse=True)
+
+        return statistics_per_course
+
+    def __calculate_course_completed_percentage(self, course: str, score: int) -> float:
+        """Calculate percentage of completed course"""
+        max_point: int = self.__max_points_per_course[course]
+
+        return score / max_point * 100

@@ -2,6 +2,7 @@ from python_learning_progress_tracker.menu_choice_validator import MenuChoiceVal
 from python_learning_progress_tracker.student import Student
 from python_learning_progress_tracker.student_input_validator import StudentValidator
 from python_learning_progress_tracker.student_management import StudentManagement
+from python_learning_progress_tracker.statistics import Statistics
 
 
 class UserInterface:
@@ -104,6 +105,34 @@ class UserInterface:
         """List students from studentManagement datastore."""
         print(self.__student_manager)
 
+    def __statistics_menu(self):
+        statistics = Statistics(self.__student_manager)
+        print(statistics)
+        while True:
+            inp = input().strip()
+
+            if MenuChoiceValidator.is_back(inp):
+                return
+
+            if inp.lower() not in self.__student_manager.accepted_courses:
+                print("Unknown course.")
+                continue
+
+            course = self.__student_manager.accepted_courses[inp.lower()]
+
+            try:
+                statistics_per_course = statistics.fetch_completion_info(course)
+                print(course)
+                self.__print_statistics(statistics_per_course)
+            except ValueError as vl:
+                print(vl)
+
+    @staticmethod
+    def __print_statistics(statistics_per_course: list[tuple[str, int, float]]):
+        print("id     points   completed")
+        for student_id, score, completed_percentage in statistics_per_course:
+            print(f"{student_id}   {score}       {completed_percentage:.1f}%")
+
     @staticmethod
     def __validate_input_student_add(student_info: list[str]) -> bool:
         """Validate the input during student add."""
@@ -156,5 +185,8 @@ class UserInterface:
             elif MenuChoiceValidator.is_find_student(choice):
                 print("Enter an id or 'back' to return: ")
                 self.__find_student()
+            elif MenuChoiceValidator.is_statistics(choice):
+                print("Type the name of a course to see details or 'back' to quit:")
+                self.__statistics_menu()
             else:
                 print("Error: unknown command!")

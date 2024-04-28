@@ -21,6 +21,22 @@ def ui_with_student():
     return UserInterface(student_manager)
 
 
+@pytest.fixture
+def ui_with_two_students_and_points():
+    student_manager = StudentManagement()
+    student_manager.add_student(Student('John', 'Doe', 'johnd@gmail.com'))
+    student_manager.add_student(Student('Jane', 'Spark', 'jspark@gmail.com'))
+    student_manager.add_points("1000", (8, 7, 7, 5))
+    student_manager.add_points("1000", (7, 6, 9, 7))
+    student_manager.add_points("1000", (6, 5, 5, 0))
+
+    student_manager.add_points("1001", (8, 0, 8, 6))
+    student_manager.add_points("1001", (7, 0, 0, 0))
+    student_manager.add_points("1001", (9, 0, 0, 5))
+
+    return UserInterface(student_manager)
+
+
 def test_start_exit_message(ui_empty, monkeypatch, capsys):
     monkeypatch.setattr("sys.stdin", StringIO("exit\n"))
     ui_empty.start()
@@ -218,7 +234,7 @@ def test_ui_found_student_id(ui_with_student, monkeypatch, capsys):
 
 
 def test_ui_add_points(ui_with_student, monkeypatch, capsys):
-    input_commands = f"add points\ntesting 5 5 5 5\n10001 5 5 5 5\n1000 4 3 2\n1000 5 5 5 5\nback\nexit\n"
+    input_commands = "add points\ntesting 5 5 5 5\n10001 5 5 5 5\n1000 4 3 2\n1000 5 5 5 5\nback\nexit\n"
     monkeypatch.setattr("sys.stdin", StringIO(input_commands))
     ui_with_student.start()
     captured = capsys.readouterr()
@@ -229,5 +245,59 @@ def test_ui_add_points(ui_with_student, monkeypatch, capsys):
             "No student is found for id=10001.\n"
             "Incorrect points format.\n"
             "Points updated.\n"
+            "Bye!"
+    )
+
+
+def test_ui_statistics_with_no_data(ui_empty, monkeypatch, capsys):
+    input_commands = f"statistics\npython\nswing\nback\nexit"
+    monkeypatch.setattr("sys.stdin", StringIO(input_commands))
+    ui_empty.start()
+    captured = capsys.readouterr()
+    assert (
+            captured.out.strip() ==
+            "Type the name of a course to see details or 'back' to quit:\n"
+            """Most popular: n/a
+Least popular: n/a
+Highest activity: n/a
+Lowest activity: n/a
+Easiest course: n/a
+Hardest course: n/a\n"""
+            "Python\n"
+            "id     points   completed\n"
+            "Unknown course.\n"
+            "Bye!"
+    )
+
+
+def test_ui_statistics_two_students(ui_with_two_students_and_points, monkeypatch, capsys):
+    input_commands = "statistics\npython\ndsa\ndatabases\nflask\nback\nexit"
+    monkeypatch.setattr("sys.stdin", StringIO(input_commands))
+    ui_with_two_students_and_points.start()
+    captured = capsys.readouterr()
+    assert (
+            captured.out.strip() ==
+            "Type the name of a course to see details or 'back' to quit:\n"
+            """Most popular: Python, Databases, Flask
+Least popular: DSA
+Highest activity: Python
+Lowest activity: DSA
+Easiest course: Python
+Hardest course: Flask\n"""
+            "Python\n"
+            "id     points   completed\n"
+            "1001   24       4.0%\n"
+            "1000   21       3.5%\n"
+            "DSA\n"
+            "id     points   completed\n"
+            "1000   18       4.5%\n"
+            "Databases\n"
+            "id     points   completed\n"
+            "1000   21       4.4%\n"
+            "1001   8       1.7%\n"
+            "Flask\n"
+            "id     points   completed\n"
+            "1000   12       2.2%\n"
+            "1001   11       2.0%\n"
             "Bye!"
     )
