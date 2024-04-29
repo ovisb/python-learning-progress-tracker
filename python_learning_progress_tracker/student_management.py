@@ -10,8 +10,11 @@ class StudentManagement:
         self.__student_id = 1000
         self.__unique_emails = set()
         self.__default_courses: dict[str, int] = {"Python": 0, "DSA": 0, "Databases": 0, "Flask": 0}
+        self.__max_points_per_course = {"Python": 600, "DSA": 400, "Databases": 480, "Flask": 550}
         self.__accepted_courses = {"python": "Python", "dsa": "DSA", "databases": "Databases", "flask": "Flask"}
         self.__activity_tracker = ActivityTracker(self.__default_courses.copy())
+        self.__completed_courses = {}
+        self.__to_notify_students = {}
 
     def add_student(self, student: "Student") -> None:
         """Add a new student to the management system."""
@@ -29,21 +32,46 @@ class StudentManagement:
         self.__unique_emails.add(student_email)
 
     def __student_id_exists(self, student_id: str) -> bool:
+        """Check if student_id exists in the management system."""
         if student_id not in self.students:
             return False
         return True
 
     def add_points(self, student_id: str, points: tuple) -> None:
-        """Add points to the course progress of a student."""
+        """Public interface for calling add_points."""
         if not self.__student_id_exists(student_id):
             raise ValueError(f"No student is found for id={student_id}.")
 
         course_progress = self.students[student_id]["course_progress"]
         for course, point in zip(course_progress.keys(), points):
-            self.students[student_id]["course_progress"][course] += point
+            self.__add_point(student_id, course, point)
 
             if point > 0:
                 self.__activity_tracker.increment_activity(course)
+
+    def __add_point(self, student_id: str, course: str, point: int) -> None:
+        """Add a point to the course progress of a student.
+          IF points >= max_points_per_course add to completed list and to notify list
+        """
+        max_points_course_limit = self.__max_points_per_course[course]
+        current_course_points = self.students[student_id]["course_progress"][course]
+
+        if current_course_points + point < max_points_course_limit:
+            self.students[student_id]["course_progress"][course] += point
+            return
+
+        self.students[student_id]["course_progress"][course] = max_points_course_limit
+
+        student_object = self.students[student_id]["student_data"]
+        self.__completed_courses.setdefault(student_object, [])
+
+        if course not in self.__completed_courses[student_object]:
+            self.__add_to_completed_and_notify(student_object, course)
+
+    def __add_to_completed_and_notify(self, student_object: Student, course: str):
+        """Add student and course to notify list."""
+        self.__completed_courses[student_object].append(course)
+        self.__to_notify_students.setdefault(student_object, []).append(course)
 
     def find_student(self, student_id: str) -> Union[ValueError, str]:
         """Find a student by its ID and raise an error if it already exists."""
@@ -81,11 +109,28 @@ class StudentManagement:
 
     @property
     def activity_tracker(self) -> ActivityTracker:
+        """Return the ActivityTracker instance."""
         return self.__activity_tracker
 
     @property
     def accepted_courses(self) -> dict[str, str]:
+        """Return the dictionary containing accepted courses."""
         return self.__accepted_courses
+
+    @property
+    def max_points_per_course(self) -> dict[str, int]:
+        """Return the dictionary containing max points per course."""
+        return self.__max_points_per_course
+
+    @property
+    def completed_courses(self):
+        """Return the dictionary containing completed courses."""
+        return self.__completed_courses
+
+    @property
+    def to_notify_students(self):
+        """Return the dictionary containing student data to notify."""
+        return self.__to_notify_students
 
     def __len__(self) -> int:
         """Return the number of students in the management system."""

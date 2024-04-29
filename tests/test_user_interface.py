@@ -37,6 +37,45 @@ def ui_with_two_students_and_points():
     return UserInterface(student_manager)
 
 
+@pytest.fixture
+def ui_with_two_completed_courses_to_notify_one_student():
+    student_manager = StudentManagement()
+    student_manager.add_student(Student('John', 'Doe', 'johnd@gmail.com'))
+
+    points = 600, 400, 0, 0
+
+    student_manager.add_points("1000", points)
+
+    return UserInterface(student_manager)
+
+
+@pytest.fixture
+def ui_with_all_completed_courses_to_notify_one_student():
+    student_manager = StudentManagement()
+    student_manager.add_student(Student('John', 'Doe', 'johnd@gmail.com'))
+
+    points = 600, 400, 480, 550
+
+    student_manager.add_points("1000", points)
+
+    return UserInterface(student_manager)
+
+
+@pytest.fixture
+def ui_with_completed_courses_to_notify_two_student():
+    student_manager = StudentManagement()
+    student_manager.add_student(Student('John', 'Doe', 'johnd@gmail.com'))
+    student_manager.add_student(Student('James', 'Dean', 'jamesd@gmail.com'))
+
+    points1 = 600, 400, 0, 0
+    points2 = 0, 0, 480, 550
+
+    student_manager.add_points("1000", points1)
+    student_manager.add_points("1001", points2)
+
+    return UserInterface(student_manager)
+
+
 def test_start_exit_message(ui_empty, monkeypatch, capsys):
     monkeypatch.setattr("sys.stdin", StringIO("exit\n"))
     ui_empty.start()
@@ -301,3 +340,75 @@ Hardest course: Flask\n"""
             "1001   11       2.0%\n"
             "Bye!"
     )
+
+
+def test_ui_notify_two_courses_one_student(capsys, monkeypatch, ui_with_two_completed_courses_to_notify_one_student):
+    input_commands = "notify\nnotify\nexit"
+    monkeypatch.setattr("sys.stdin", StringIO(input_commands))
+    ui_with_two_completed_courses_to_notify_one_student.start()
+
+    captured = capsys.readouterr()
+    assert (
+            captured.out.strip() == """To: johnd@gmail.com
+Re: Your Learning Progress
+Hello, John Doe! You have accomplished our Python course!
+To: johnd@gmail.com
+Re: Your Learning Progress
+Hello, John Doe! You have accomplished our DSA course!
+Total 1 students have been notified.
+Total 0 students have been notified.
+"""
+                                    "Bye!"
+    )
+
+
+def test_ui_notify_all_courses_one_student(capsys, monkeypatch, ui_with_all_completed_courses_to_notify_one_student):
+    input_commands = "notify\nnotify\nexit"
+    monkeypatch.setattr("sys.stdin", StringIO(input_commands))
+    ui_with_all_completed_courses_to_notify_one_student.start()
+
+    captured = capsys.readouterr()
+    assert (
+            captured.out.strip() == """To: johnd@gmail.com
+Re: Your Learning Progress
+Hello, John Doe! You have accomplished our Python course!
+To: johnd@gmail.com
+Re: Your Learning Progress
+Hello, John Doe! You have accomplished our DSA course!
+To: johnd@gmail.com
+Re: Your Learning Progress
+Hello, John Doe! You have accomplished our Databases course!
+To: johnd@gmail.com
+Re: Your Learning Progress
+Hello, John Doe! You have accomplished our Flask course!
+Total 1 students have been notified.
+Total 0 students have been notified.
+"""
+                                    "Bye!"
+    ), "Expected two completed courses from student 1, and no students left to notify"
+
+
+def test_ui_notify_courses_two_student(capsys, monkeypatch, ui_with_completed_courses_to_notify_two_student):
+    input_commands = "notify\nnotify\nexit"
+    monkeypatch.setattr("sys.stdin", StringIO(input_commands))
+    ui_with_completed_courses_to_notify_two_student.start()
+
+    captured = capsys.readouterr()
+    assert (
+            captured.out.strip() == """To: johnd@gmail.com
+Re: Your Learning Progress
+Hello, John Doe! You have accomplished our Python course!
+To: johnd@gmail.com
+Re: Your Learning Progress
+Hello, John Doe! You have accomplished our DSA course!
+To: jamesd@gmail.com
+Re: Your Learning Progress
+Hello, James Dean! You have accomplished our Databases course!
+To: jamesd@gmail.com
+Re: Your Learning Progress
+Hello, James Dean! You have accomplished our Flask course!
+Total 2 students have been notified.
+Total 0 students have been notified.
+"""
+                                    "Bye!"
+    ), "Expected student 1 first two courses completed and student 2 last two courses completed."

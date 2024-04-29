@@ -3,6 +3,7 @@ from python_learning_progress_tracker.student import Student
 from python_learning_progress_tracker.student_input_validator import StudentValidator
 from python_learning_progress_tracker.student_management import StudentManagement
 from python_learning_progress_tracker.statistics import Statistics
+from python_learning_progress_tracker.notify import Notify
 
 
 class UserInterface:
@@ -127,6 +128,19 @@ class UserInterface:
             except ValueError as vl:
                 print(vl)
 
+    def __notify(self) -> None:
+        notify = Notify(self.__student_manager)
+        notify_list = notify.notify()
+
+        if not notify_list:
+            print("Total 0 students have been notified.")
+            return
+
+        for student, emails in notify_list.items():
+            for email in emails:
+                print(email)
+        print(f"Total {len(notify_list)} students have been notified.")
+
     @staticmethod
     def __print_statistics(statistics_per_course: list[tuple[str, int, float]]):
         print("id     points   completed")
@@ -188,5 +202,7 @@ class UserInterface:
             elif MenuChoiceValidator.is_statistics(choice):
                 print("Type the name of a course to see details or 'back' to quit:")
                 self.__statistics_menu()
+            elif MenuChoiceValidator.is_notify(choice):
+                self.__notify()
             else:
                 print("Error: unknown command!")

@@ -10,7 +10,6 @@ class Statistics:
     def __initialize_stats_vars(self):
         self.__enrolments = self.__count_total_submissions_and_points_per_course()
         self.__activity_count = self.__student_management.activity_tracker.activity_count
-        self.__max_points_per_course = {"Python": 600, "DSA": 400, "Databases": 480, "Flask": 550}
         self.__lowest_activity_count = min(self.__activity_count.values())
         self.__highest_activity_count = max(self.__activity_count.values())
         self.__submissions_count = [item['submissions'] for item in self.__enrolments.values()]
@@ -173,6 +172,6 @@ Hardest course: {self.__hardest_course()}"""
 
     def __calculate_course_completed_percentage(self, course: str, score: int) -> float:
         """Calculate percentage of completed course"""
-        max_point: int = self.__max_points_per_course[course]
+        max_point: int = self.__student_management.max_points_per_course[course]
 
         return score / max_point * 100

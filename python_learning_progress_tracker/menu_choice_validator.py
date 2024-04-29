@@ -30,3 +30,7 @@ class MenuChoiceValidator:
     @staticmethod
     def is_statistics(choice: str) -> bool:
         return choice == "statistics"
+
+    @staticmethod
+    def is_notify(choice: str) -> bool:
+        return choice == "notify"

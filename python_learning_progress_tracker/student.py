@@ -10,6 +10,12 @@ class Student:
     def __repr__(self) -> str:
         return f"Student(first_name: {self.first_name} last_name: {self.last_name} email: {self.email})"
 
+    def __hash__(self):
+        return hash((self.first_name, self.last_name, self.email))
+
+    def __eq__(self, other):
+        return (self.first_name, self.last_name, self.email) == (other.first_name, other.last_name, other.email)
+
     @property
     def first_name(self) -> str:
         return self.__first_name
