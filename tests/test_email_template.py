@@ -1,4 +1,4 @@
-from python_learning_progress_tracker.email import Email
+from python_learning_progress_tracker.email_template import Email
 from python_learning_progress_tracker.student import Student
 
 
