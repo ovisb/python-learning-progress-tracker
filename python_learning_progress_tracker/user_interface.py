@@ -62,21 +62,36 @@ class UserInterface:
 
             student_info = UserInterface.__split_input(choice)
 
-            if not UserInterface.__validate_input_student_add(student_info):
-                continue
+            self.__process_student_info(student_info)
 
-            updated_student_info = UserInterface.__treat_exception_multiple_last_name(
-                student_info
-            )
+    def __process_student_info(self, student_info: list[str]) -> None:
+        """Process student information and add student to studentManagement datastore."""
+        if not self.__validate_student_information_input(student_info):
+            return
 
-            if not UserInterface.__validate_student_info(updated_student_info):
-                continue
+        updated_student_info = UserInterface.__treat_exception_multiple_last_name(
+            student_info
+        )
+        try:
+            self.__student_manager.add_student(Student(*updated_student_info))
+            print("The student has been added.")
+        except ValueError as vl:
+            print(vl)
 
-            try:
-                self.__student_manager.add_student(Student(*updated_student_info))
-                print("The student has been added.")
-            except ValueError as vl:
-                print(vl)
+    @staticmethod
+    def __validate_student_information_input(student_info: list[str]) -> bool:
+        """Validate student information input."""
+        if not UserInterface.__validate_number_of_student_inputs(student_info):
+            return False
+
+        updated_student_info = UserInterface.__treat_exception_multiple_last_name(
+            student_info
+        )
+
+        if not UserInterface.__validate_student_info(updated_student_info):
+            return False
+
+        return True
 
     def __find_student(self) -> None:
         """Find student from studentManagement datastore."""
@@ -161,7 +176,7 @@ class UserInterface:
             print(f"{student_id}   {score}       {completed_percentage:.1f}%")
 
     @staticmethod
-    def __validate_input_student_add(student_info: list[str]) -> bool:
+    def __validate_number_of_student_inputs(student_info: list[str]) -> bool:
         """Validate the input during student add."""
         try:
             StudentValidator.validate_number_of_inputs(student_info)
