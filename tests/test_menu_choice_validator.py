@@ -21,23 +21,3 @@ def test_is_empty(choice, expected):
 @pytest.mark.parametrize("choice, expected", [("list", True), ("exit", False)])
 def test_list_students(choice, expected):
     assert MenuChoiceValidator.is_list_students(choice) is expected, f"Expected choice to be {expected}."
-
-
-@pytest.mark.parametrize("choice, expected", [("find", True), (" ", False)])
-def test_find_students(choice, expected):
-    assert MenuChoiceValidator.is_find_student(choice) is expected, f"Expected choice to be {expected}."
-
-
-@pytest.mark.parametrize("choice, expected", [("add points", True), (" ", False)])
-def test_add_points(choice, expected):
-    assert MenuChoiceValidator.is_add_points(choice) is expected, f"Expected choice to be {expected}."
-
-
-@pytest.mark.parametrize("choice, expected", [("statistics", True), (" ", False)])
-def test_is_statistics(choice, expected):
-    assert MenuChoiceValidator.is_statistics(choice) is expected, f"Expected choice to be {expected}."
-
-
-@pytest.mark.parametrize("choice, expected", [("notify", True), (" ", False)])
-def test_is_notify(choice, expected):
-    assert MenuChoiceValidator.is_notify(choice) is expected, f"Expected choice to be {expected}."

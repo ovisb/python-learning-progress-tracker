@@ -1,36 +1,35 @@
+from enum import Enum
+
+
+class MenuChoice(Enum):
+    EXIT = "exit"
+    BACK = "back"
+    EMPTY = ""
+    ADD_STUDENTS = "add students"
+    ADD_POINTS = "add points"
+    LIST_STUDENTS = "list"
+    FIND_STUDENT = "find"
+    STATISTICS = "statistics"
+    NOTIFY = "notify"
+
+
 class MenuChoiceValidator:
     @staticmethod
     def is_exit(choice: str) -> bool:
-        return choice == "exit"
+        return choice == MenuChoice.EXIT.value
 
     @staticmethod
     def is_back(choice: str) -> bool:
-        return choice == "back"
+        return choice == MenuChoice.BACK.value
 
     @staticmethod
     def is_empty_input(choice: str) -> bool:
-        return choice.strip() == ""
-
-    @staticmethod
-    def is_add_student(choice: str) -> bool:
-        return choice == "add students"
+        return choice.strip() == MenuChoice.EMPTY.value
 
     @staticmethod
     def is_add_points(choice: str) -> bool:
-        return choice == "add points"
+        return choice == MenuChoice.ADD_POINTS.value
 
     @staticmethod
     def is_list_students(choice: str) -> bool:
-        return choice == "list"
-
-    @staticmethod
-    def is_find_student(choice: str) -> bool:
-        return choice == "find"
-
-    @staticmethod
-    def is_statistics(choice: str) -> bool:
-        return choice == "statistics"
-
-    @staticmethod
-    def is_notify(choice: str) -> bool:
-        return choice == "notify"
+        return choice == MenuChoice.LIST_STUDENTS.value

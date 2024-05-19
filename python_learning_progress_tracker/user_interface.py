@@ -4,11 +4,20 @@ from python_learning_progress_tracker.student_input_validator import StudentVali
 from python_learning_progress_tracker.student_management import StudentManagement
 from python_learning_progress_tracker.statistics import Statistics
 from python_learning_progress_tracker.notify import Notify
+from python_learning_progress_tracker.menu_choice_validator import MenuChoice
 
 
 class UserInterface:
     def __init__(self, student_manager: "StudentManagement") -> None:
         self.__student_manager = student_manager
+        self.__actions = {
+            MenuChoice.ADD_STUDENTS.value: self.__add_student,
+            MenuChoice.ADD_POINTS.value: self.__add_student_points,
+            MenuChoice.FIND_STUDENT.value: self.__find_student,
+            MenuChoice.LIST_STUDENTS.value: self.__list_students,
+            MenuChoice.STATISTICS.value: self.__statistics_menu,
+            MenuChoice.NOTIFY.value: self.__notify,
+        }
 
     @staticmethod
     def __get_choice() -> str:
@@ -42,6 +51,7 @@ class UserInterface:
 
     def __add_student(self):
         """Add student to studentManagement datastore."""
+        print("Enter student credentials or 'back' to return: ")
         while True:
             choice = UserInterface.__get_student_details()
             if MenuChoiceValidator.is_back(choice):
@@ -70,6 +80,7 @@ class UserInterface:
 
     def __find_student(self) -> None:
         """Find student from studentManagement datastore."""
+        print("Enter an id or 'back' to return: ")
         while True:
             choice = UserInterface.__get_choice().lower()
             if MenuChoiceValidator.is_back(choice):
@@ -83,6 +94,7 @@ class UserInterface:
 
     def __add_student_points(self) -> None:
         """Add student points to studentManagement datastore."""
+        print("Enter an id and points or 'back' to return: ")
         while True:
             choice = UserInterface.__get_choice().lower()
             if MenuChoiceValidator.is_back(choice):
@@ -108,6 +120,7 @@ class UserInterface:
 
     def __statistics_menu(self):
         statistics = Statistics(self.__student_manager)
+        print("Type the name of a course to see details or 'back' to quit:")
         print(statistics)
         while True:
             inp = input().strip()
@@ -190,19 +203,8 @@ class UserInterface:
                 self.__list_students()
                 continue
 
-            if MenuChoiceValidator.is_add_student(choice):
-                print("Enter student credentials or 'back' to return: ")
-                self.__add_student()
-            elif MenuChoiceValidator.is_add_points(choice):
-                print("Enter an id and points or 'back' to return: ")
-                self.__add_student_points()
-            elif MenuChoiceValidator.is_find_student(choice):
-                print("Enter an id or 'back' to return: ")
-                self.__find_student()
-            elif MenuChoiceValidator.is_statistics(choice):
-                print("Type the name of a course to see details or 'back' to quit:")
-                self.__statistics_menu()
-            elif MenuChoiceValidator.is_notify(choice):
-                self.__notify()
+            action = self.__actions.get(choice)
+            if action:
+                action()
             else:
                 print("Error: unknown command!")
